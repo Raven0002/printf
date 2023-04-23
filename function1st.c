@@ -1,38 +1,97 @@
 #include "main.h"
 
 /**
- * print_c - print a character
- * @list: list
- * Return: a character
+ * print_char - Prints a char
+ * @types: List a of arguments
+ * @buffer: Buffer array to handle print
+ * @flags:  Calculates active flags
+ * @width: Width
+ * @precision: Precision specification
+ * @size: Size specifier
+ * Return: Number of chars printed
  */
-
-int print_c(va_list list)
+int print_c(va_list list, char buffer[],
+		int flags, int width, int precision, int size)
 {
-	char c;
+		char c = va_arg(list, int);
 
-	c = va_arg(list, int);
-	_putchar(c);
-	return (1);
+		return (handle_write_char(c, buffer, flags, width, precision, size));
 }
+
 /**
- * print_s - prints a string
- * @list: list
- * Return: a string
+ * print_string - Prints a string
+ * @types: List a of arguments
+ * @buffer: Buffer array to handle print
+ * @flags:  Calculates active flags
+ * @width: get width.
+ * @precision: Precision specification
+ * @size: Size specifier
+ * Return: Number of chars printed
  */
-
-int print_s(va_list list)
+int print_s(va_list list, char buffer[],
+		int flags, int width, int precision, int size)
 {
-	int i;
-	char *str2;
+	int length = 0, i;
+	char *str = va_arg(list, char *);
 
-	str2 = va_arg(list, char *);
-
-	if (str2 == NULL)
+	UNUSED(buffer);
+	UNUSED(flags);
+	UNUSED(width);
+	UNUSED(precision);
+	UNUSED(size);
+	if (str == NULL)
 	{
-		_printf("(null)");
-		return (6);
+		str = "(null)";
+		if (precision >= 6)
+			str = "      ";
 	}
-	for (i = 0; str2[i] != '\0'; i++)
-		_putchar(str2[i]);
-	return (i);
+
+	while (str[length] != '\0')
+		length++;
+
+	if (precision >= 0 && precision < length)
+		length = precision;
+
+	if (width > length)
+	{
+		if (flags & F_MINUS)
+		{
+			write(1, &str[0], length);
+			for (i = width - length; i > 0; i--)
+				write(1, " ", 1);
+			return (width);
+		}
+		else
+		{
+			for (i = width - length; i > 0; i--)
+				write(1, " ", 1);
+			write(1, &str[0], length);
+			return (width);
+		}
+	}
+
+	return (write(1, str, length));
+}
+
+
+/**
+ * print_mod - Prints a percent sign
+ * @types: List of arguments
+ * @buffer: Buffer array to handle print
+ * @flags:  Calculates active flags
+ * @width: get width.
+ * @precision: Precision specification
+ * @size: Size specifier
+ * Return: Number of chars printed
+ */
+int print_mod(va_list list, char buffer[],
+		int flags, int width, int precision, int size)
+{
+	UNUSED(list);
+	UNUSED(buffer);
+	UNUSED(flags);
+	UNUSED(width);
+	UNUSED(precision);
+	UNUSED(size);
+	return (write(1, "%%", 1));
 }

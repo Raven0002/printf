@@ -1,78 +1,57 @@
 #include "main.h"
 
 /**
- *_printf - is a function that prints
- *@format: gives the format to the function
- * cases -  c, s, %
- * Return: a string
+ * print_buffer - Prints the contents of the buffer if it exist
+ * @buffer: Array of chars
+ * @buff_ind: Index at which to add next char, represents the length.
  */
+void print_buffer(char buffer[], int *buff_ind)
+{
+	if (*buff_ind > 0)
+		write(1, &buffer[0], *buff_ind);
+
+	*buff_ind = 0;
+}
+
 
 int _printf(const char *format, ...)
 {
+	int i, printed = 0, printed_char = 0;
+	int flags, width, precision, size, buff_ind = 0;
 	va_list list;
-	int count = -1;
+	char buffer[BUFF_SIZE];
 
-	prf opr[] = {
-		{"c", print_c},
-		{"s", print_s},
-		{"%", print_mod},
-		{NULL, NULL}
-	};
+	if (format == NULL)
+		return (-1);
 
-	if (format != NULL)
+	va_start(list, format);
+
+	for (i = 0; format && format[i] != '\0'; i++)
 	{
-		va_start(list, format);
-		count = _funcopr(format, opr, list);
-		va_end(list);
-	}
-}
-
-/**
- * _funcopr - Helper function to print and call functions.
- * @format: String recieved.
- * @opr: special options.
- * @list: arguments
- * Return: number of chars printed
- */
-
-int _funcopr(const char *format, prf opr[], va_list list)
-{
-	int count = 0, x, y;
-
-	for (x = 0; format[x] != '\0'; x++)
-	{
-		if (format[x] == '%')
+		if (format[i] != '%')
 		{
-			if (format[x + 1] == '\0')
-			{
-				return (-1);
-			}
-			for (y = 0; ops[y].op != NULL; y++)
-			{
-				if (format[x + 1] == ops[y].op[0])
-				{
-					count = count + ops[y].f(list);
-					break;
-				}
-			}
-			if (opr[y].op == NULL && format[x + 1] != ' ')
-			{
-				if (format[x + 1] != '\0')
-				{
-					_putchar(format[x]);
-					_putchar(format[x + 1]);
-					count = count + 2;
-				}
-				else
-					return (-1);
-			}
-			x = x + 1;
+			buffer[buff_ind++] = format[i];
+			if (buff_ind == BUFF_SIZE)
+				print_buffer(buffer, &buff_ind);
+			/* write(1, &format[i], 1);*/
+			printed_char++;
 		}
 		else
 		{
-			_putchar(format[x]);
-			count = count + 1;
+			print_buffer(buffer, &buff_ind);
+			flags = get_flags(format, &i);
+			width = get_width(format, &i, list);
+			precision = get_precision(format, &i, list);
+			size = get_size(format, &i);
+			++i;
+			printed = handle_print(format, &i, list, buffer,
+					flags, width, precision, size);
+			if (printed == -1)
+				return (-1);
+			printed_char += printed;
 		}
 	}
-	return (count);
+	print_buffer(buffer, &buff_ind);
+	va_end(list);
+	return (printed_char);
 }
