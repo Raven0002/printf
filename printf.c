@@ -1,20 +1,5 @@
 #include "main.h"
 
-void print_buffer(char buffer[], int *buff_ind);
-
-/**
- * print_buffer - Prints contents of buffer
- * @buffer: Array of the chars
- * @buff_ind: Index where the next character should be added
- */
-void print_buffer(char buffer[], int *buff_ind)
-{
-	if (*buff_ind > 0)
-		write(1, &buffer[0], *buff_ind);
-
-	*buff_ind = 0;
-}
-
 /**
  * _printf - Prints formatted string to standard output
  * @format: string containing zero or more directives
@@ -63,4 +48,17 @@ int _printf(const char *format, ...)
 	va_end(list);
 
 	return (printed_chars);
+}
+
+/**
+ * print_buffer - Prints contents of buffer
+ * @buffer: Array of the chars
+ * @buff_ind: Index where the next character should be added
+ */
+void print_buffer(char buffer[], int *buff_ind)
+{
+        if (*buff_ind > 0)
+                write(1, &buffer[0], *buff_ind);
+
+        *buff_ind = 0;
 }
