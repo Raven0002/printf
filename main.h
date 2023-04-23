@@ -8,5 +8,6 @@
 
 int _putchar(char c);
 int _printf(const char *format, ...);
+int _funcopr(const char *format, prf opr[], va_list list);
 
 #endif
