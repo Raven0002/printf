@@ -8,15 +8,35 @@
 #include <stdarg.h>
 #include <limits.h>
 
+#define UNUSED(x) (void)(x)
+#define BUFF_SIZE 1024
+
+#define F_MINUS 1
+#define F_PLUS 2
+#define F_ZERO 4
+#define F_HASH 8
+#define F_SPACE 16
+
+#define S_LONG 2
+#define S_SHORT 1
+
 /**
- * struct pr - struct for operations
- * @op: operation
- * @f: to be listed
- * Description: Checks if there's an operation
+ * typedef struct fmt fmt_t - format structure
+ *
+ * @fmt:  string representing a format
+ * @fm_t: function pointer
  */
-typedef struct pr
+typedef struct fmt fmt_t;
+
+/**
+ * struct fmt - Struct op
+ *
+ * @fmt: the format
+ * @f: the function
+ */
+struct fmt
 {
-	char op;
+	char fmt;
 	int (*f)(va_list, char[], int, int, int, int);
 };
 
