@@ -22,19 +22,20 @@ int _printf(const char *format, ...)
 	if (format != NULL)
 	{
 		va_start(list, format);
+		count = _funcopr(format, opr, list);
 		va_end(list);
 	}
 }
 
 /**
- * _funcion - Helper function to print and call functions.
+ * _funcopr - Helper function to print and call functions.
  * @format: String recieved.
  * @opr: special options.
  * @list: arguments
  * Return: number of chars printed
  */
 
-int _funcion(const char *format, prf opr[], va_list list)
+int _funcopr(const char *format, prf opr[], va_list list)
 {
 	int count = 0, x, y;
 
