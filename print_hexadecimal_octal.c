@@ -1,8 +1,7 @@
 #include "main.h"
 
-
 /**
- * print_char - Prints a chararter
+ * print_hexadecimal - function prints unsigned in hex char
  * @types: arguments that will be used to print
  *
  * @buffer: buffer array used to handle the print
@@ -18,17 +17,15 @@
  * Return: result
  */
 
-int print_char(va_list types, char buffer[],
+int print_hexadecimal(va_list types, char buffer[],
 	int flags, int width, int precision, int size)
 {
-	char c = va_arg(types, int);
-
-	return (handle_write_char(c, buffer, flags, width, precision, size));
+	return (print_hexa(types, "0123456789abcdef", buffer,
+		flags, 'x', width, precision, size));
 }
 
-
 /**
- * print_percent -  function for printing percent signs
+ * print_octal - Prints an unsigned number in octal notation
  * @types: arguments that will be used to print
  *
  * @buffer: buffer array used to handle the print
@@ -44,14 +41,33 @@ int print_char(va_list types, char buffer[],
  * Return: result
  */
 
-int print_percent(va_list types, char buffer[],
+int print_octal(va_list types, char buffer[],
 	int flags, int width, int precision, int size)
 {
-	UNUSED(types);
-	UNUSED(buffer);
-	UNUSED(flags);
+
+	int o = BUFF_SIZE - 2;
+	unsigned long int num = va_arg(types, unsigned long int);
+	unsigned long int init_num = num;
+
 	UNUSED(width);
-	UNUSED(precision);
-	UNUSED(size);
-	return (write(1, "%%", 1));
+
+	num = convert_size_unsgnd(num, size);
+
+	if (num == 0)
+		buffer[o--] = '0';
+
+	buffer[BUFF_SIZE - 1] = '\0';
+
+	while (num > 0)
+	{
+		buffer[o--] = (num % 8) + '0';
+		num /= 8;
+	}
+
+	if (flags & F_HASH && init_num != 0)
+		buffer[o--] = '0';
+
+	o++;
+
+	return (write_unsgnd(0, o, buffer, flags, width, precision, size));
 }
