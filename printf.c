@@ -1,63 +1,48 @@
 #include "main.h"
 
 /**
- * _printf - Prints formatted string to standard output
- * @format: string containing zero or more directives
- * Return: result
+ * _printf - prints anything
+ * @format: the format string
+ * Return: number of bytes printed
  */
 int _printf(const char *format, ...)
 {
-	int f, printed = 0, printed_chars = 0;
-	int flags, width, precision, size, buff_ind = 0;
-	va_list list;
-	char buffer[BUFF_SIZE];
+	int sum = 0;
+	va_list ap;
+	char *p, *start;
+	params_t params = PARAMS_INIT;
 
-	if (format == NULL)
+	va_start(ap, format);
+
+	if (!format || (format[0] == '%' && !format[1]))
 		return (-1);
-
-	va_start(list, format);
-
-	for (f = 0; format && format[f] != '\0'; f++)
+	if (format[0] == '%' && format[1] == ' ' && !format[2])
+		return (-1);
+	for (p = (char *)format; *p; p++)
 	{
-		if (format[f] != '%')
+		init_params(&params, ap);
+		if (*p != '%')
 		{
-			buffer[buff_ind++] = format[f];
-			if (buff_ind == BUFF_SIZE)
-				print_buffer(buffer, &buff_ind);
-			printed_chars++;
+			sum += _putchar(*p);
+			continue;
 		}
+		start = p;
+		p++;
+		while (get_flag(p, &params)) /* while char at p is flag char */
+		{
+			p++; /* next char */
+		}
+		p = get_width(p, &params, ap);
+		p = get_precision(p, &params, ap);
+		if (get_modifier(p, &params))
+			p++;
+		if (!get_specifier(p))
+			sum += print_from_to(start, p,
+				params.l_modifier || params.h_modifier ? p - 1 : 0);
 		else
-		{
-			print_buffer(buffer, &buff_ind);
-			flags = get_flags(format, &f);
-			width = get_width(format, &f, list);
-			precision = get_precision(format, &f, list);
-			size = get_size(format, &f);
-			++f;
-			printed = handle_print(format, &f, list, buffer,
-				flags, width, precision, size);
-			if (printed == -1)
-				return (-1);
-			printed_chars += printed;
-		}
+			sum += get_print_func(p, ap, &params);
 	}
-
-	print_buffer(buffer, &buff_ind);
-
-	va_end(list);
-
-	return (printed_chars);
-}
-
-/**
- * print_buffer - Prints contents of buffer
- * @buffer: Array of the chars
- * @buff_ind: Index where the next character should be added
- */
-void print_buffer(char buffer[], int *buff_ind)
-{
-        if (*buff_ind > 0)
-                write(1, &buffer[0], *buff_ind);
-
-        *buff_ind = 0;
+	_putchar(BUF_FLUSH);
+	va_end(ap);
+	return (sum);
 }
