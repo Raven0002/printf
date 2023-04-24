@@ -68,3 +68,6 @@ B _printf - an implementation of printf function
 .I printf(1), asprintf(3), dprintf(3), scanf(3), setlocale(3), wcrtomb(3), wprintf(3), locale(5)
 .SH BUGS
 .B '-', '+', ' '(space)
+
+.SH AUTHORS
+Hamza Fikri and Imane Marhfor
