@@ -12,7 +12,7 @@ int (*get_specifier(char *s))(va_list ap, params_t *params)
 		{"d", print_int},
 		{"i", print_int},
 		{"s", print_string},
-		{"%", print_percent},
+		{"%", print_mod},
 		{"b", print_binary},
 		{"o", print_octal},
 		{"u", print_unsigned},
